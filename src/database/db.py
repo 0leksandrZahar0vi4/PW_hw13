@@ -1,11 +1,13 @@
 import contextlib
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
-
+from sqlalchemy.orm import DeclarativeBase
 from src.conf.config import config
 
 
-class DatabaseSessionManager:
+class Base(DeclarativeBase):
+    pass
+class DatabAseSessionManager:
     def __init__(self, url: str):
         self._engine: AsyncEngine | None = create_async_engine(url)
         self._session_maker: async_sessionmaker = async_sessionmaker(autoflush=False, autocommit=False,
@@ -25,7 +27,7 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(config.DB_URL)
+sessionmanager = DatabAseSessionManager(config.DB_URL)
 
 
 async def get_db():
