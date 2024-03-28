@@ -23,7 +23,7 @@ class TodoResponse(BaseModel):
     completed: bool
     created_at: datetime | None
     update_at: datetime | None
-    # user: UserResponse | None
+    user: UserResponse | None
 
     class Config:
         from_attributes = True

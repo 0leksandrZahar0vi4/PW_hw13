@@ -13,8 +13,7 @@ from src.services.roles import RoleAccess
 
 router = APIRouter(prefix='/todos', tags=['todos'])
 
-access_to_route_all = RoleAccess
-([Role.admin, Role.moderator])
+access_to_route_all = RoleAccess([Role.admin, Role.moderator])
 
 
 @router.get("/", response_model=list[TodoResponse])
