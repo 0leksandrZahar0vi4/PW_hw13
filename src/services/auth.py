@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError, jwt
 
 from src.database.db import get_db
+from src.conf
 from src.repository import users as repository_users
 
 
