@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from pydantic_settings import BaseSettings
-from pydantic import ConfigDict, validator, EmailStr
+from pydantic import ConfigDict, validator, EmailStr, field_validator
 
 
 class Settings(BaseSettings):
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
         return v
 
 
-    model_config = ConfigDict(env_file=".env", env_file_encoding = "utf-8") # noqa
+    model_config = ConfigDict(extra="ignore", env_file= ".env", env_file_encoding = "utf-8") # noqa
 
 config = Settings()
 

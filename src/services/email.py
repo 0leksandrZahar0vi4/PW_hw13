@@ -5,13 +5,15 @@ from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
 from src.services.auth import auth_service
+from src.conf.config import config
+
 
 conf = ConnectionConfig(
-    MAIL_USERNAME="fatsapiuser@meta.ua",
-    MAIL_PASSWORD="123456",
-    MAIL_FROM="fatsapiuser@meta.ua",
-    MAIL_PORT=465,
-    MAIL_SERVER="smtp.meta.ua",
+    MAIL_USERNAME=config.MAIL_USERNAME,
+    MAIL_PASSWORD=config.MAIL_PASSWORD,
+    MAIL_FROM=config.MAIL_USERNAME,
+    MAIL_PORT=config.MAIL_PORT,
+    MAIL_SERVER=config.MAIL_SERVER,
     MAIL_FROM_NAME="MY work",
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=True,

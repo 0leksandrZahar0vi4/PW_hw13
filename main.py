@@ -1,15 +1,27 @@
-from fastapi import FastAPI, Depends, HTTPException
+import re
+from ipaddress import ip_address
+from typing import Callable
+
+import redis.asyncio as redis
+from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi_limiter import FastAPILimiter
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from src.database.db import get_db
-from src.routes import todos
-from src.routes import auth
+from src.routes import todos, auth, users
 
+from src.conf.config import config
 
 app = FastAPI()
-
+banned_ips = [
+    ip_address("192.168.1.1"),
+    ip_address("192.168.1.2"),
+    ip_address("127.0.0.1"),
+]
 origins = ["*"]
 
 app.mount("/static", StaticFiles(directory="src/static"), name="static")
@@ -22,12 +34,49 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# @app.middleware("http")
+# async def ban_ips(request: Request, call_next: Callable):
+#     ip = ip_address(request.client.host)
+#     if ip in banned_ips:
+#         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": "You are banned"})
+#     response = await call_next(request)
+#     return response
+
+user_agent_ban_list = [r"Googlebot", r"bot-Yandex"]
+
+
+@app.middleware("http")
+async def user_agent_ban_middleware(request: Request, call_next: Callable):
+    print(request.headers.get("Authorization"))
+    user_agent = request.headers.get("user-agent")
+    print(user_agent)
+    for ban_pattern in user_agent_ban_list:
+        if re.search(ban_pattern, user_agent):
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "You are banned"},
+            )
+    response = await call_next(request)
+    return response
+
+
 app.include_router(auth.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 app.include_router(todos.router, prefix="/api")
 
-@app.get("/")
-def index():
-    return {"message": "Application"}
+
+@app.on_event("startup")
+async def startup():
+    r = await redis.Redis(host=config.REDIS_DOMAIN, port=config.REDIS_PORT, db=0, password=config.REDIS_PASSWORD)
+    await FastAPILimiter.init(r)
+
+
+templates = Jinja2Templates(directory="src/templates")
+
+
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "our": "Build Home Work 13"})
 
 
 @app.get("/api/healthchecker")
