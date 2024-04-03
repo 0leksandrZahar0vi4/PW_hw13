@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
 from src.database.db import get_db
 from src.routes import todos
 from src.routes import auth
@@ -11,6 +11,8 @@ from src.routes import auth
 app = FastAPI()
 
 origins = ["*"]
+
+app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
