@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     CLD_NAME: str = 'abc'
     CLD_API_KEY: int = 326488457974591
     CLD_API_SECRET: str = "secret"
+    CLD_NAME: str = "asd"
+    CLD_API_KEY: int = 326488457974591
+    CLD_API_SECRET: str = "secret"
 
     @field_validator("ALGORITHM")
     @classmethod
